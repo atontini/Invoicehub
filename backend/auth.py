@@ -3,6 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
 from .models import User
 from . import db
+from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
 
 auth = Blueprint('auth', __name__)
 
@@ -25,6 +27,36 @@ def login_post():
     login_user(user, remember=remember)
 
     return redirect(url_for('main.profile'))
+
+def generate_reset_token(user):
+    user_email = user.email
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return s.dumps(user_email, salt='password-reset-salt')
+
+def verify_reset_token(token, max_age=3600):
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=max_age)
+    except Exception:
+        return None
+    return email
+
+@auth.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        #token = generate_reset_token(user)
+        #reset_url = url_for('auth.reset_password_request', token=token, _external=True)
+        #msg = Message(
+        #    subject='Password Reset Request',
+        #    sender='noreply@yourapp.com',
+        #    recipients=[email]
+        #)
+        #msg.body = f"To reset your password, visit the following link: {reset_url}\n\nIf you did not request this, please ignore this email."
+        #Mail.send(msg)
+        flash('If the email is linked to an account, you will receive a reset link shortly. Check your inbox and spam folder')
+    return render_template('reset_password_request.html', title='Reset Password')
 
 @auth.route('/signup')
 def signup():
