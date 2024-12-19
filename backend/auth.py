@@ -35,11 +35,16 @@ def signup_post():
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
+    password_check = request.form.get('password_check')
 
     user = User.query.filter_by(email=email).first()
 
     if user:
         flash('Email address already exists')
+        return redirect(url_for('auth.signup'))
+    
+    if password != password_check:
+        flash('Password not matching')
         return redirect(url_for('auth.signup'))
 
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='pbkdf2:sha256'))
