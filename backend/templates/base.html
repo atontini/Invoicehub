@@ -43,6 +43,12 @@
                                 Products
                             </a>
                             {% endif %}
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.categories') }}" class="navbar-item">
+                                Categories
+                            </a>
+                            {% endif %}
+                            
                         </div>
                     </div>
                 </div>
