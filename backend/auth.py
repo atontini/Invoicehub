@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
-from .models import User, Product, Category
+from .models import User, Product, Category, Client
 from . import db
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
@@ -95,13 +95,17 @@ def logout():
 @auth.route('/products')
 @login_required
 def products():
-    #items: id, first, last, email, phone, location, hobby
     products = Product.query.all()
     return render_template('products.html', products=products)
 
 @auth.route('/categories')
 @login_required
 def categories():
-    #items: id, first, last, email, phone, location, hobby
     categories = Category.query.all()
     return render_template('categories.html', categories=categories)
+
+@auth.route('/users')
+@login_required
+def users():
+    users = Client.query.all()
+    return render_template('users.html', users=users)

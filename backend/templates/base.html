@@ -48,7 +48,11 @@
                                 Categories
                             </a>
                             {% endif %}
-                            
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.users') }}" class="navbar-item">
+                                User
+                            </a>
+                            {% endif %}                            
                         </div>
                     </div>
                 </div>
