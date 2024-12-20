@@ -38,6 +38,11 @@
                                 Logout
                             </a>
                             {% endif %}
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.products') }}" class="navbar-item">
+                                Products
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
