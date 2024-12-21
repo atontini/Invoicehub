@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
-from .models import User, Product, Category, Client
+from .models import User, Product, Category, Client, PurchasedItem
 from . import db
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
+import pandas as pd
+import json
 
 auth = Blueprint('auth', __name__)
 
@@ -109,3 +111,66 @@ def categories():
 def users():
     users = Client.query.all()
     return render_template('users.html', users=users)
+
+@auth.route('/analytics', methods=['GET'])
+def analytics():
+#    # Query data from the database
+#    purchases = PurchasedItem.query.all()
+#    products = Product.query.all()
+
+#    # Transform data into Pandas DataFrame
+#    purchase_data = [
+#        {
+#            'product_id': purchase.product_id,
+#            'quantity': purchase.quantity,
+#            'total_price': purchase.total_price
+#        } for purchase in purchases
+#    ]
+
+#    product_data = [
+#        {
+#            'id': product.id,
+#            'name': product.name,
+#            'price': product.price,
+#            'category_id': product.category_id
+#        } for product in products
+#    ]
+
+#    purchase_df = pd.DataFrame(purchase_data)
+#    product_df = pd.DataFrame(product_data)
+
+#    # Merge data for analytics
+#    merged_df = purchase_df.merge(product_df, left_on='product_id', right_on='id')
+
+    # Example KPIs
+#    total_sales = merged_df['total_price'].sum()
+#    total_items_sold = merged_df['quantity'].sum()
+#    sales_by_category = merged_df.groupby('category_id')['total_price'].sum().to_dict()
+
+#    # Return analytics as JSON
+#    analytics_data = {
+#        'total_sales': total_sales,
+#        'total_items_sold': total_items_sold,
+#        'sales_by_category': sales_by_category
+#    }
+    average_sales = {
+        'total_sales': 50897,
+        'this_month_percentage': 8
+    }
+
+    total_sales = {
+        'total': 550897,
+        'increase_last_month': 3.48
+    }
+
+    total_inquieries = {
+        'total': 750897,
+        'increase_last_month': 3.48
+    }
+
+    total_invoices = {
+        'total': 897,
+        'increase_last_month': 3.48
+    }
+
+    return render_template('dashboard.html', average_sales=average_sales, total_sales=total_sales, total_inquieries=total_inquieries, total_invoices=total_invoices)
