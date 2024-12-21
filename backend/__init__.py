@@ -17,7 +17,7 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
-    from .models import User, Client, Product, Category
+    from .models import User, Client, Product, Category, PurchasedItem
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -37,7 +37,7 @@ def create_app():
 
 def populate_database():
     """Populate the database with initial data if tables are empty."""
-    from .models import Client, Product, Category
+    from .models import Client, Product, Category, PurchasedItem
 
     # Create Categories
     if not Category.query.first():
@@ -61,6 +61,13 @@ def populate_database():
         product3 = Product(name='T-shirt', price=9.99, category_id=3)
 
         db.session.add_all([product1, product2, product3])
+
+    # Create Purchased Items
+    if not PurchasedItem.query.first():
+        purchase1 = PurchasedItem(client_id=1, product_id=1, quantity=1, total_price=999.99)
+        purchase2 = PurchasedItem(client_id=2, product_id=2, quantity=2, total_price=39.98)
+
+        db.session.add_all([purchase1, purchase2])
 
     try:
         db.session.commit()
