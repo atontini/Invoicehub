@@ -173,4 +173,11 @@ def analytics():
         'increase_last_month': 3.48
     }
 
-    return render_template('dashboard.html', average_sales=average_sales, total_sales=total_sales, total_inquieries=total_inquieries, total_invoices=total_invoices)
+    graph_sales = {
+        'profit': [10, 20, 15, 40, 50, 70, 90],
+        'sales': [5, 15, 25, 35, 30, 60, 80],
+        'categories': ['Apple', 'Samsung', 'Vivo', 'Oppo'],
+        'categories_percentage': [40, 30, 20, 10]
+    }
+
+    return render_template('dashboard.html', average_sales=average_sales, total_sales=total_sales, total_inquieries=total_inquieries, total_invoices=total_invoices, graph_sales=graph_sales)

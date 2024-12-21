@@ -149,9 +149,9 @@
     <!-- Sales Chart -->
     <div class="flex flex-col lg:flex-row gap-4 p-4">
         <!-- Line Chart -->
-        <div class="flex-1 bg-white rounded-lg shadow p-4">
-            <h2 class="text-lg font-semibold mb-4">Total Sales</h2>
-            <canvas id="lineChart" class="w-full h-64"></canvas>
+        <div class="w-full max-w-2xl p-4 bg-white rounded-lg shadow">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Total Sales</h2>
+            <canvas id="trendChart"></canvas>
         </div>
           
         <!-- Donut Chart -->
@@ -159,6 +159,82 @@
             <h2 class="text-lg font-semibold mb-4">Total Sales</h2>
             <canvas id="donutChart" class="w-full h-64"></canvas>
         </div>
-    </div>         
+    </div>
+
+    <script>
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        const trendChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00'],
+            datasets: [
+              {
+                label: 'Profit',
+                data: {{ graph_sales.profit }},
+                borderColor: '#4F46E5',
+                backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                tension: 0.4,
+                fill: true,
+              },
+              {
+                label: 'Sales',
+                data: {{ graph_sales.sales }},
+                borderColor: '#F43F5E',
+                backgroundColor: 'rgba(244, 63, 94, 0.2)',
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#4B5563',
+                },
+              },
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: '#6B7280',
+                },
+              },
+              y: {
+                ticks: {
+                  color: '#6B7280',
+                },
+              },
+            },
+          },
+        });
+
+        let categories = [ {% for item in graph_sales['categories'] %} "{{ item }}", {% endfor %} ];
+
+        const ctx1 = document.getElementById('donutChart').getContext('2d');
+        const donutChart = new Chart(ctx1, {
+          type: 'doughnut',
+          data: {
+            labels: categories,
+            datasets: [
+              {
+                data: {{ graph_sales.categories_percentage }},
+                backgroundColor: ['#4F46E5', '#3B82F6', '#FACC15', '#F43F5E'],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+          },
+        });
+    </script>
 </body>
 {% endblock %}
