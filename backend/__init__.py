@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -10,6 +12,9 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+
+    jwt = JWTManager(app)
 
     db.init_app(app)
 
