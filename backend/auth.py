@@ -244,46 +244,8 @@ def categories():
         }), 500
 
 @auth.route('/analytics', methods=['GET'])
+@jwt_required()
 def analytics():
-#    # Query data from the database
-#    purchases = PurchasedItem.query.all()
-#    products = Product.query.all()
-
-#    # Transform data into Pandas DataFrame
-#    purchase_data = [
-#        {
-#            'product_id': purchase.product_id,
-#            'quantity': purchase.quantity,
-#            'total_price': purchase.total_price
-#        } for purchase in purchases
-#    ]
-
-#    product_data = [
-#        {
-#            'id': product.id,
-#            'name': product.name,
-#            'price': product.price,
-#            'category_id': product.category_id
-#        } for product in products
-#    ]
-
-#    purchase_df = pd.DataFrame(purchase_data)
-#    product_df = pd.DataFrame(product_data)
-
-#    # Merge data for analytics
-#    merged_df = purchase_df.merge(product_df, left_on='product_id', right_on='id')
-
-    # Example KPIs
-#    total_sales = merged_df['total_price'].sum()
-#    total_items_sold = merged_df['quantity'].sum()
-#    sales_by_category = merged_df.groupby('category_id')['total_price'].sum().to_dict()
-
-#    # Return analytics as JSON
-#    analytics_data = {
-#        'total_sales': total_sales,
-#        'total_items_sold': total_items_sold,
-#        'sales_by_category': sales_by_category
-#    }
     average_sales = {
         'total_sales': 50897,
         'this_month_percentage': 8
@@ -311,4 +273,11 @@ def analytics():
         'categories_percentage': [40, 30, 20, 10]
     }
 
-    return render_template('dashboard.html', average_sales=average_sales, total_sales=total_sales, total_inquieries=total_inquieries, total_invoices=total_invoices, graph_sales=graph_sales)
+    return jsonify({
+        "msg": "successfully retrieved all categories",
+        "average_sales": average_sales,
+        "total_sales": total_sales,
+        "total_inquieries": total_inquieries,
+        "total_invoices": total_invoices,
+        "graph_sales": graph_sales,
+    })
