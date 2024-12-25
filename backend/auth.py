@@ -161,7 +161,6 @@ def delete_product(product_id):
             "data": None
         }), 500
 
-
 @auth.route('/categories/', methods=['GET'])
 @jwt_required()
 def categories():
@@ -227,11 +226,22 @@ def delete_category(category_id):
             "data": None
         }), 500
 
-@auth.route('/users')
-@login_required
-def users():
-    users = Client.query.all()
-    return render_template('users.html', users=users)
+@auth.route('/users/', methods=['GET'])
+@jwt_required()
+def categories():
+    try:
+        users = Client.query.all()
+        users_list = [users.to_dict() for user in users]
+        return jsonify({
+            "msg": "successfully retrieved all categories",
+            "data": users_list
+        })
+    except Exception as e:
+        return jsonify({
+            "msg": "failed to retrieve all categories",
+            "error": str(e),
+            "data": None
+        }), 500
 
 @auth.route('/analytics', methods=['GET'])
 def analytics():
