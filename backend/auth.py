@@ -1,30 +1,27 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_required, logout_user
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from .models import User, Product, Category, Client, PurchasedItem
 from . import db
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 import pandas as pd
-import json
+from flask import jsonify
 
 auth = Blueprint('auth', __name__)
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        remember = True if request.form.get('remember') else False
-        user = User.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password, password):
-            flash('Please check your login details and try again.')
-            return redirect(url_for('auth.login'))
+    username = request.json.get("username", None)
+    password = request.json.get("password", None)
+    remember = True if request.json.get('remember') else False
+    user = User.query.filter_by(email=username).first()
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({"msg": "Please check your login details and try again."}), 401
     
-        login_user(user, remember=remember)
-        return redirect(url_for('main.profile'))
-    
-    return render_template('login.html')
+    access_token = create_access_token(identity=username)
+    return jsonify(access_token=access_token)
 
 def generate_reset_token(user):
     user_email = user.email
