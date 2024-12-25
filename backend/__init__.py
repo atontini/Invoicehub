@@ -31,9 +31,6 @@ def create_app():
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-
     with app.app_context():
         db.create_all()
         populate_database()
