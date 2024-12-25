@@ -3,12 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+
+    CORS(app)
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
