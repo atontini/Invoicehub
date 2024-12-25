@@ -102,11 +102,22 @@ def products():
             "data": None
         }), 500
 
-@auth.route('/categories')
-@login_required
+@auth.route('/categories/', methods=['GET'])
+@jwt_required()
 def categories():
-    categories = Category.query.all()
-    return render_template('categories.html', categories=categories)
+    try:
+        categories = Category.query.all()
+        categories_list = [category.to_dict() for category in categories]
+        return jsonify({
+            "msg": "successfully retrieved all categories",
+            "data": categories_list
+        })
+    except Exception as e:
+        return jsonify({
+            "msg": "failed to retrieve all categories",
+            "error": str(e),
+            "data": None
+        }), 500
 
 @auth.route('/users')
 @login_required
