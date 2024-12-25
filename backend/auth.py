@@ -87,7 +87,7 @@ def logout():
 
 @auth.route("/products/", methods=["GET"])
 @jwt_required()
-def products():
+def get_all_products():
     try:
         products = Product.query.all()
         products_list = [product.to_dict() for product in products]
@@ -102,7 +102,6 @@ def products():
             "data": None
         }), 500
 
-# Edit product
 @auth.route("/products/<int:product_id>", methods=["PUT"])
 @jwt_required()
 def edit_product(product_id):
@@ -116,7 +115,6 @@ def edit_product(product_id):
                 "data": None
             }), 404
 
-        # Update product fields
         for key, value in data.items():
             if hasattr(product, key):
                 setattr(product, key, value)
@@ -134,7 +132,6 @@ def edit_product(product_id):
             "data": None
         }), 500
 
-# Delete product
 @auth.route("/products/<int:product_id>", methods=["DELETE"])
 @jwt_required()
 def delete_product(product_id):
@@ -163,7 +160,7 @@ def delete_product(product_id):
 
 @auth.route('/categories/', methods=['GET'])
 @jwt_required()
-def categories():
+def get_all_categories():
     try:
         categories = Category.query.all()
         categories_list = [category.to_dict() for category in categories]
@@ -178,7 +175,6 @@ def categories():
             "data": None
         }), 500
 
-# Edit Category
 @auth.route("/categories/<int:category_id>", methods=["PUT"])
 @jwt_required()
 def edit_category(category_id):
@@ -206,7 +202,6 @@ def edit_category(category_id):
             "data": None
         }), 500
 
-# Delete Category
 @auth.route("/categories/<int:category_id>", methods=["DELETE"])
 @jwt_required()
 def delete_category(category_id):
@@ -228,12 +223,12 @@ def delete_category(category_id):
 
 @auth.route('/users/', methods=['GET'])
 @jwt_required()
-def categories():
+def get_all_users():
     try:
         users = Client.query.all()
-        users_list = [users.to_dict() for user in users]
+        users_list = [user.to_dict() for user in users]
         return jsonify({
-            "msg": "successfully retrieved all categories",
+            "msg": "successfully retrieved all users",
             "data": users_list
         })
     except Exception as e:
@@ -245,7 +240,7 @@ def categories():
 
 @auth.route('/analytics', methods=['GET'])
 @jwt_required()
-def analytics():
+def get_all_analytics():
     average_sales = {
         'total_sales': 50897,
         'this_month_percentage': 8
