@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, logout_user
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt, jwt_required
 from .models import User, Product, Category, Client, PurchasedItem
 from . import db
 from itsdangerous import URLSafeTimedSerializer
@@ -10,6 +10,8 @@ import pandas as pd
 from flask import jsonify
 
 auth = Blueprint('auth', __name__)
+
+blacklist = set()
 
 @auth.route('/login', methods=['POST'])
 def login():
@@ -73,11 +75,15 @@ def signup():
         return redirect(url_for('auth.login'))
     return render_template('signup.html')
 
-@auth.route('/logout')
-@login_required
+@auth.route('/logout', methods=['DELETE'])
+@jwt_required()
 def logout():
-    logout_user()
-    return redirect(url_for('main.index'))
+    jti = get_jwt()['jti']
+    if jti in blacklist:
+        return jsonify({"msg": "You are already logged out."}), 200
+    else:
+        blacklist.add(jti)
+        return jsonify({'msg': 'Successfully logged out'}), 200
 
 @auth.route('/products')
 @login_required
