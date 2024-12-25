@@ -102,6 +102,66 @@ def products():
             "data": None
         }), 500
 
+# Edit product
+@auth.route("/products/<int:product_id>", methods=["PUT"])
+@jwt_required()
+def edit_product(product_id):
+    try:
+        data = request.get_json()
+        product = Product.query.get(product_id)
+
+        if not product:
+            return jsonify({
+                "msg": "Product not found",
+                "data": None
+            }), 404
+
+        # Update product fields
+        for key, value in data.items():
+            if hasattr(product, key):
+                setattr(product, key, value)
+
+        db.session.commit()
+        return jsonify({
+            "msg": "Product updated successfully",
+            "data": product.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "msg": "Failed to update product",
+            "error": str(e),
+            "data": None
+        }), 500
+
+# Delete product
+@auth.route("/products/<int:product_id>", methods=["DELETE"])
+@jwt_required()
+def delete_product(product_id):
+    try:
+        product = Product.query.get(product_id)
+
+        if not product:
+            return jsonify({
+                "msg": "Product not found",
+                "data": None
+            }), 404
+
+        db.session.delete(product)
+        db.session.commit()
+        return jsonify({
+            "msg": "Product deleted successfully",
+            "data": None
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "msg": "Failed to delete product",
+            "error": str(e),
+            "data": None
+        }), 500
+
+
 @auth.route('/categories/', methods=['GET'])
 @jwt_required()
 def categories():
@@ -138,7 +198,7 @@ def edit_category(category_id):
 
         return jsonify({
             "msg": "Category successfully updated",
-            "data": category.to_dict()  # Assuming your Category model has a to_dict method
+            "data": category.to_dict()
         })
     except Exception as e:
         return jsonify({
