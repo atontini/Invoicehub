@@ -85,11 +85,22 @@ def logout():
         blacklist.add(jti)
         return jsonify({'msg': 'Successfully logged out'}), 200
 
-@auth.route('/products')
-@login_required
-def products():
-    products = Product.query.all()
-    return render_template('products.html', products=products)
+@auth.route("/products/", methods=["GET"])
+@jwt_required
+#current_user
+def get_products():
+    try:
+        products = Product.query.all()
+        return jsonify({
+            "msg": "successfully retrieved all products",
+            "data": products
+        })
+    except Exception as e:
+        return jsonify({
+            "msg": "failed to retrieve all products",
+            "error": str(e),
+            "data": None
+        }), 500
 
 @auth.route('/categories')
 @login_required
