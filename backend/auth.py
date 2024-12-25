@@ -119,6 +119,54 @@ def categories():
             "data": None
         }), 500
 
+# Edit Category
+@auth.route("/categories/<int:category_id>", methods=["PUT"])
+@jwt_required()
+def edit_category(category_id):
+    try:
+        category = Category.query.get(category_id)
+        if not category:
+            return jsonify({"msg": "Category not found"}), 404
+
+        data = request.get_json()
+        new_name = data.get("name")
+        if not new_name:
+            return jsonify({"msg": "Category name is required"}), 400
+
+        category.name = new_name
+        db.session.commit()
+
+        return jsonify({
+            "msg": "Category successfully updated",
+            "data": category.to_dict()  # Assuming your Category model has a to_dict method
+        })
+    except Exception as e:
+        return jsonify({
+            "msg": "Failed to update category",
+            "error": str(e),
+            "data": None
+        }), 500
+
+# Delete Category
+@auth.route("/categories/<int:category_id>", methods=["DELETE"])
+@jwt_required()
+def delete_category(category_id):
+    try:
+        category = Category.query.get(category_id)
+        if not category:
+            return jsonify({"msg": "Category not found"}), 404
+
+        db.session.delete(category)
+        db.session.commit()
+
+        return jsonify({"msg": "Category successfully deleted"})
+    except Exception as e:
+        return jsonify({
+            "msg": "Failed to delete category",
+            "error": str(e),
+            "data": None
+        }), 500
+
 @auth.route('/users')
 @login_required
 def users():
