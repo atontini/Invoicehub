@@ -86,14 +86,14 @@ def logout():
         return jsonify({'msg': 'Successfully logged out'}), 200
 
 @auth.route("/products/", methods=["GET"])
-@jwt_required
-#current_user
-def get_products():
+@jwt_required()
+def products():
     try:
         products = Product.query.all()
+        products_list = [product.to_dict() for product in products]
         return jsonify({
             "msg": "successfully retrieved all products",
-            "data": products
+            "data": products_list
         })
     except Exception as e:
         return jsonify({
