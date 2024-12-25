@@ -9,11 +9,11 @@ from flask import current_app
 import pandas as pd
 from flask import jsonify
 
-auth = Blueprint('auth', __name__)
+routes = Blueprint('routes', __name__)
 
 blacklist = set()
 
-@auth.route('/login', methods=['POST'])
+@routes.route('/login', methods=['POST'])
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
@@ -38,7 +38,7 @@ def verify_reset_token(token, max_age=3600):
         return None
     return email
 
-@auth.route('/reset_password_request', methods=['GET', 'POST'])
+@routes.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -55,7 +55,7 @@ def reset_password_request():
         flash('If the email is linked to an account, you will receive a reset link shortly. Check your inbox and spam folder')
     return render_template('reset_password_request.html', title='Reset Password')
 
-@auth.route('/signup')
+@routes.route('/signup')
 def signup():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -75,7 +75,7 @@ def signup():
         return redirect(url_for('auth.login'))
     return render_template('signup.html')
 
-@auth.route('/logout', methods=['DELETE'])
+@routes.route('/logout', methods=['DELETE'])
 @jwt_required()
 def logout():
     jti = get_jwt()['jti']
@@ -85,7 +85,7 @@ def logout():
         blacklist.add(jti)
         return jsonify({'msg': 'Successfully logged out'}), 200
 
-@auth.route("/products/", methods=["GET"])
+@routes.route("/products/", methods=["GET"])
 @jwt_required()
 def get_all_products():
     try:
@@ -102,7 +102,7 @@ def get_all_products():
             "data": None
         }), 500
 
-@auth.route("/products/<int:product_id>", methods=["PUT"])
+@routes.route("/products/<int:product_id>", methods=["PUT"])
 @jwt_required()
 def edit_product(product_id):
     try:
@@ -132,7 +132,7 @@ def edit_product(product_id):
             "data": None
         }), 500
 
-@auth.route("/products/<int:product_id>", methods=["DELETE"])
+@routes.route("/products/<int:product_id>", methods=["DELETE"])
 @jwt_required()
 def delete_product(product_id):
     try:
@@ -158,7 +158,7 @@ def delete_product(product_id):
             "data": None
         }), 500
 
-@auth.route('/categories/', methods=['GET'])
+@routes.route('/categories/', methods=['GET'])
 @jwt_required()
 def get_all_categories():
     try:
@@ -175,7 +175,7 @@ def get_all_categories():
             "data": None
         }), 500
 
-@auth.route("/categories/<int:category_id>", methods=["PUT"])
+@routes.route("/categories/<int:category_id>", methods=["PUT"])
 @jwt_required()
 def edit_category(category_id):
     try:
@@ -202,7 +202,7 @@ def edit_category(category_id):
             "data": None
         }), 500
 
-@auth.route("/categories/<int:category_id>", methods=["DELETE"])
+@routes.route("/categories/<int:category_id>", methods=["DELETE"])
 @jwt_required()
 def delete_category(category_id):
     try:
@@ -221,7 +221,7 @@ def delete_category(category_id):
             "data": None
         }), 500
 
-@auth.route('/users/', methods=['GET'])
+@routes.route('/users/', methods=['GET'])
 @jwt_required()
 def get_all_users():
     try:
@@ -238,7 +238,7 @@ def get_all_users():
             "data": None
         }), 500
 
-@auth.route('/analytics', methods=['GET'])
+@routes.route('/analytics', methods=['GET'])
 @jwt_required()
 def get_all_analytics():
     average_sales = {

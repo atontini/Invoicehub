@@ -28,8 +28,8 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
+    from .routes import routes as routes_blueprint
+    app.register_blueprint(routes_blueprint)
 
     with app.app_context():
         db.create_all()
