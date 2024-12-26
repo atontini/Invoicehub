@@ -8,7 +8,7 @@ const Login = () => {
     const [error, setError] = useState(null);
 
     const handleLogin = async (e) => {
-        e.preventDefault(); // Prevent page refresh on form submission
+        e.preventDefault();
 
         try {
             const response = await axios.post('http://localhost:5000/login', {
@@ -17,14 +17,10 @@ const Login = () => {
                 remember,
             });
 
-            // Store the access token in localStorage or a secure cookie
             localStorage.setItem('access_token', response.data.access_token);
             alert('Login successful!');
             setError(null);
-
-            // Redirect to another page or perform additional actions after successful login
         } catch (err) {
-            // Handle login error
             console.error('Login error:', err);
             setError('Please check your login details and try again.');
         }
