@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_required, logout_user
-from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required
 from .models import User, Product, Category, Client, PurchasedItem
 from . import db
 from itsdangerous import URLSafeTimedSerializer
@@ -23,7 +22,8 @@ def login():
         return jsonify({"msg": "Please check your login details and try again."}), 401
     
     access_token = create_access_token(identity=username)
-    return jsonify(access_token=access_token)
+    refresh_token = create_refresh_token(identity=username)
+    return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 @routes.route('/verify', methods=['GET'])
 @jwt_required()
@@ -38,25 +38,28 @@ def refresh():
     new_access_token = create_access_token(identity=current_user)
     return jsonify(access_token=new_access_token), 200
 
-@routes.route('/signup')
+@routes.route('/signup', methods=['POST'])
 def signup():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        name = request.form.get('name')
-        password = request.form.get('password')
-        password_check = request.form.get('password_check')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash('Email address already exists')
-            return redirect(url_for('auth.signup'))
-        if password != password_check:
-            flash('Password not matching')
-            return redirect(url_for('auth.signup'))
-        new_user = User(email=email, name=name, password=generate_password_hash(password, method='pbkdf2:sha256'))
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('auth.login'))
-    return render_template('signup.html')
+    email = request.json.get('email')
+    name = request.json.get('name')
+    password = request.json.get('password')
+    password_check = request.json.get('password_check')
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify({"error": "Email address already exists"}), 400
+
+    if password != password_check:
+        return jsonify({"error": "Passwords do not match"}), 400
+
+    new_user = User(email=email, name=name, password=generate_password_hash(password, method='pbkdf2:sha256'))
+    db.session.add(new_user)
+    db.session.commit()
+
+    access_token = create_access_token(identity=email)
+
+    return jsonify({"access_token": access_token})
+
 
 @routes.route('/logout', methods=['DELETE'])
 @jwt_required()

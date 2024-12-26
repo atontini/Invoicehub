@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from datetime import timedelta
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -15,7 +16,9 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-    app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+    app.config["JWT_SECRET_KEY"] = "super-secret"
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
     jwt = JWTManager(app)
 
