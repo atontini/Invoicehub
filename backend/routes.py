@@ -7,6 +7,7 @@ from flask import current_app
 import pandas as pd
 from flask import jsonify
 from query_utils import apply_filters, apply_ordering, apply_pagination
+from analitics_utils import *
 
 routes = Blueprint('routes', __name__)
 
@@ -290,32 +291,15 @@ def get_all_users():
 @routes.route("/analytics", methods=['GET'])
 @jwt_required()
 def get_all_analytics():
-    average_sales = {
-        'total_sales': 50897,
-        'this_month_percentage': 8
-    }
+    average_sales = get_average_sales()
 
-    total_sales = {
-        'total': 550897,
-        'increase_last_month': 3.48
-    }
+    total_sales = get_total_sales()
 
-    total_inquieries = {
-        'total': 750897,
-        'increase_last_month': 3.48
-    }
+    total_inquieries = get_total_inquieries()
 
-    total_invoices = {
-        'total': 897,
-        'increase_last_month': 3.48
-    }
+    total_invoices = get_total_invoices()
 
-    graph_sales = {
-        'profit': [10, 20, 15, 40, 50, 70, 90],
-        'sales': [5, 15, 25, 35, 30, 60, 80],
-        'categories': ['Apple', 'Samsung', 'Vivo', 'Oppo'],
-        'categories_percentage': [40, 30, 20, 10]
-    }
+    graph_sales = get_graph_sales()
 
     return jsonify({
         "msg": "successfully retrieved all categories",
