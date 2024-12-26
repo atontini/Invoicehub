@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, logout_user
-from flask_jwt_extended import create_access_token, get_jwt, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required
 from .models import User, Product, Category, Client, PurchasedItem
 from . import db
 from itsdangerous import URLSafeTimedSerializer
@@ -25,35 +25,18 @@ def login():
     access_token = create_access_token(identity=username)
     return jsonify(access_token=access_token)
 
-def generate_reset_token(user):
-    user_email = user.email
-    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    return s.dumps(user_email, salt='password-reset-salt')
+@routes.route('/verify', methods=['GET'])
+@jwt_required()
+def verify():
+    current_user = get_jwt_identity()
+    return jsonify({"msg": f"Token is valid. Welcome, {current_user}!"}), 200
 
-def verify_reset_token(token, max_age=3600):
-    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    try:
-        email = s.loads(token, salt='password-reset-salt', max_age=max_age)
-    except Exception:
-        return None
-    return email
-
-@routes.route('/reset_password_request', methods=['GET', 'POST'])
-def reset_password_request():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        user = User.query.filter_by(email=email).first()
-        #token = generate_reset_token(user)
-        #reset_url = url_for('auth.reset_password_request', token=token, _external=True)
-        #msg = Message(
-        #    subject='Password Reset Request',
-        #    sender='noreply@yourapp.com',
-        #    recipients=[email]
-        #)
-        #msg.body = f"To reset your password, visit the following link: {reset_url}\n\nIf you did not request this, please ignore this email."
-        #Mail.send(msg)
-        flash('If the email is linked to an account, you will receive a reset link shortly. Check your inbox and spam folder')
-    return render_template('reset_password_request.html', title='Reset Password')
+@routes.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    current_user = get_jwt_identity()
+    new_access_token = create_access_token(identity=current_user)
+    return jsonify(access_token=new_access_token), 200
 
 @routes.route('/signup')
 def signup():
