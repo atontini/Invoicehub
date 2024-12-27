@@ -2,10 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
-const ProtectedLink = ({ to, children, style }) => {
+const ProtectedLink = ({ to, children, style, invert = false }) => {
   const { user } = useAuth();
 
-  if (!user) {
+  // Decide whether to render based on the `invert` prop
+  const shouldRender = invert ? !user : user;
+
+  if (!shouldRender) {
     return null;
   }
 

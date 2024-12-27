@@ -4,6 +4,7 @@ import ProtectedRoute from './ProtectedRoute';
 import ProtectedLink from './ProtectedLink';
 import { AuthProvider, useAuth } from './AuthContext';
 import Login from './Login';
+import Logout from './Logout';
 import Dashboard from './Dashboard';
 import Categories from './Categories';
 import Products from './Products';
@@ -16,14 +17,16 @@ const App = () => {
       <Router>
         <nav style={{ padding: '10px', background: '#f4f4f4' }}>
           <ProtectedLink to="/dashboard" style={{ marginRight: '10px' }}>Dashboard</ProtectedLink>
-          <Link to="/login" style={{ marginRight: '10px' }}>Login</Link>
-          <Link to="/signup" style={{ marginRight: '10px' }}>Signup</Link>
+          <ProtectedLink to="/login" style={{ marginRight: '10px' }} invert>Login</ProtectedLink>
+          <ProtectedLink to="/logout" style={{ marginRight: '10px' }}>Logout</ProtectedLink>
+          <ProtectedLink to="/signup" style={{ marginRight: '10px' }} invert>Signup</ProtectedLink>
           <ProtectedLink to="/products" style={{ marginRight: '10px' }}>Products</ProtectedLink>
           <ProtectedLink to="/categories" style={{ marginRight: '10px' }}>Categories</ProtectedLink>
           <ProtectedLink to="/users" style={{ marginRight: '10px' }}>Users</ProtectedLink>
         </nav>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> } />
           <Route path="/categories" element={ <ProtectedRoute> <Categories /> </ProtectedRoute> } />
           <Route path="/products" element={ <ProtectedRoute> <Products /> </ProtectedRoute> } />
