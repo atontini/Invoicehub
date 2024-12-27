@@ -1,4 +1,4 @@
-from flask_sqlalchemy import Pagination
+import flask_sqlalchemy
 from sqlalchemy.orm.query import Query
 
 def apply_filters(query: Query, model, filters: dict) -> Query:
@@ -21,7 +21,7 @@ def apply_ordering(query: Query, model, order_by: str, order_dir: str) -> Query:
             query = query.order_by(getattr(model, order_by).asc())
     return query
 
-def apply_pagination(query: Query, page: int, per_page: int) -> Pagination:
+def apply_pagination(query: Query, page: int, per_page: int) -> flask_sqlalchemy.pagination:
     """
     Applies pagination to the query and returns a paginated result.
     """
