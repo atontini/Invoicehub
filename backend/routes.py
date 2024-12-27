@@ -6,7 +6,7 @@ from . import db
 from flask import current_app
 import pandas as pd
 from flask import jsonify
-from query_utils import apply_filters, apply_ordering, apply_pagination
+from .query_utils import apply_filters, apply_ordering, apply_pagination
 from analitics_utils import *
 
 routes = Blueprint('routes', __name__)
