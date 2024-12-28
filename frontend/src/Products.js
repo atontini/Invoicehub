@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000";
-
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API_URL}/products`);
+      const response = await axios.get(`http://localhost:5000/products`);
       setProducts(response.data.data);
     } catch (err) {
       setError(err.response?.data?.msg || "Failed to fetch products");
@@ -18,7 +16,7 @@ const Products = () => {
 
   const editProduct = async (productId, updates) => {
     try {
-      const response = await axios.put(`${API_URL}/products/${productId}`, updates);
+      const response = await axios.put(`http://localhost:5000/products/${productId}`, updates);
       alert(response.data.msg);
       fetchProducts(); // Refresh the product list
     } catch (err) {
@@ -28,7 +26,7 @@ const Products = () => {
 
   const deleteProduct = async (productId) => {
     try {
-      const response = await axios.delete(`${API_URL}/products/${productId}`);
+      const response = await axios.delete(`$http://localhost:5000/products/${productId}`);
       alert(response.data.msg);
       fetchProducts(); // Refresh the product list
     } catch (err) {

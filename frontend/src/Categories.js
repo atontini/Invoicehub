@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000";
-
 const Categories = () => {
     const [categories, setCategories] = useState([]);
     const [error, setError] = useState(null);
   
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_URL}/categories/`);
+        const response = await axios.get(`http://localhost:5000/categories/`);
         setCategories(response.data.data);
       } catch (err) {
         setError(err.response?.data?.msg || "Failed to fetch categories");
@@ -18,7 +16,7 @@ const Categories = () => {
   
     const editCategory = async (categoryId, updates) => {
       try {
-        const response = await axios.put(`${API_URL}/categories/${categoryId}`, updates);
+        const response = await axios.put(`http://localhost:5000/categories/${categoryId}`, updates);
         alert(response.data.msg);
         fetchCategories(); // Refresh the category list
       } catch (err) {
@@ -28,7 +26,7 @@ const Categories = () => {
   
     const deleteCategory = async (categoryId) => {
       try {
-        const response = await axios.delete(`${API_URL}/categories/${categoryId}`);
+        const response = await axios.delete(`http://localhost:5000/categories/${categoryId}`);
         alert(response.data.msg);
         fetchCategories(); // Refresh the category list
       } catch (err) {
