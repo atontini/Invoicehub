@@ -7,12 +7,18 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/products`);
+      const token = localStorage.getItem("access_token");
+      const response = await axios.get(`http://localhost:5000/products`, {
+        headers: {
+          Authorization: 'Bearer ${token}',
+        },
+      });
       setProducts(response.data.data);
     } catch (err) {
       setError(err.response?.data?.msg || "Failed to fetch products");
     }
   };
+  
 
   const editProduct = async (productId, updates) => {
     try {
