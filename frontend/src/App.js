@@ -5,6 +5,7 @@ import ProtectedLink from './ProtectedLink';
 import { AuthProvider, useAuth } from './AuthContext';
 import Login from './Login';
 import Logout from './Logout';
+import Signup from './Signup';
 import Dashboard from './Dashboard';
 import Categories from './Categories';
 import Products from './Products';
@@ -26,6 +27,7 @@ const App = () => {
         </nav>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> } />
           <Route path="/categories" element={ <ProtectedRoute> <Categories /> </ProtectedRoute> } />
