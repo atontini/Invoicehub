@@ -37,8 +37,11 @@ const Categories = () => {
   const deleteCategory = async (categoryId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/categories/${categoryId}`
-      );
+        `http://localhost:5000/categories/${categoryId}`, {
+          headers: {
+            Authorization: `Bearer ${user.access_token}`,
+          },
+      });
       alert(response.data.msg);
       fetchCategories(); // Refresh the category list
     } catch (err) {
