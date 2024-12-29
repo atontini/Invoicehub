@@ -6,6 +6,19 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const { user } = useAuth();
 
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/products/`, {
+        headers: {
+          Authorization: `Bearer ${user.access_token}`,
+        },
+      });
+      setProducts(response.data.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
   const editProduct = async (productId, updates) => {
     try {
       await axios.put(`http://localhost:5000/products/${productId}`, updates);
@@ -26,19 +39,6 @@ const Products = () => {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/products/`, {
-          headers: {
-            Authorization: `Bearer ${user.access_token}`,
-          },
-        });
-        setProducts(response.data.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
     fetchProducts();
   }, [user.access_token]);
 

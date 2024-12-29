@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/categories/`);
+      const response = await axios.get(`http://localhost:5000/categories/`, {
+        headers: {
+          Authorization: `Bearer ${user.access_token}`,
+        },
+      });
       setCategories(response.data.data);
       setError(null);
     } catch (err) {
