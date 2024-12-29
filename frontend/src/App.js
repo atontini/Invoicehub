@@ -1,8 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import ProtectedLink from './ProtectedLink';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider } from './AuthContext';
 import Login from './Login';
 import Logout from './Logout';
 import Signup from './Signup';
@@ -12,28 +12,86 @@ import Products from './Products';
 import Users from './Users';
 
 const App = () => {
-
   return (
     <AuthProvider>
       <Router>
-        <nav style={{ padding: '10px', background: '#f4f4f4' }}>
-          <ProtectedLink to="/dashboard" style={{ marginRight: '10px' }}>Dashboard</ProtectedLink>
-          <ProtectedLink to="/login" style={{ marginRight: '10px' }} invert>Login</ProtectedLink>
-          <ProtectedLink to="/logout" style={{ marginRight: '10px' }}>Logout</ProtectedLink>
-          <ProtectedLink to="/signup" style={{ marginRight: '10px' }} invert>Signup</ProtectedLink>
-          <ProtectedLink to="/products" style={{ marginRight: '10px' }}>Products</ProtectedLink>
-          <ProtectedLink to="/categories" style={{ marginRight: '10px' }}>Categories</ProtectedLink>
-          <ProtectedLink to="/users" style={{ marginRight: '10px' }}>Users</ProtectedLink>
-        </nav>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> } />
-          <Route path="/categories" element={ <ProtectedRoute> <Categories /> </ProtectedRoute> } />
-          <Route path="/products" element={ <ProtectedRoute> <Products /> </ProtectedRoute> } />
-          <Route path="/users" element={ <ProtectedRoute> <Users /> </ProtectedRoute> } />
-        </Routes>
+        <div className="min-h-screen flex flex-col">
+          {/* Navigation Bar */}
+          <nav className="bg-blue-600 text-white shadow-lg">
+            <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+              <div className="text-xl font-bold">Mokka Back-end Test</div>
+              <div className="flex space-x-4">
+                <ProtectedLink to="/dashboard" className="hover:text-gray-300">
+                  Dashboard
+                </ProtectedLink>
+                <ProtectedLink to="/login" className="hover:text-gray-300" invert>
+                  Login
+                </ProtectedLink>
+                <ProtectedLink to="/logout" className="hover:text-gray-300">
+                  Logout
+                </ProtectedLink>
+                <ProtectedLink to="/signup" className="hover:text-gray-300" invert>
+                  Signup
+                </ProtectedLink>
+                <ProtectedLink to="/products" className="hover:text-gray-300">
+                  Products
+                </ProtectedLink>
+                <ProtectedLink to="/categories" className="hover:text-gray-300">
+                  Categories
+                </ProtectedLink>
+                <ProtectedLink to="/users" className="hover:text-gray-300">
+                  Users
+                </ProtectedLink>
+              </div>
+            </div>
+          </nav>
+
+          {/* Content Area */}
+          <main className="flex-grow container mx-auto p-4">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/categories"
+                element={
+                  <ProtectedRoute>
+                    <Categories />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/products"
+                element={
+                  <ProtectedRoute>
+                    <Products />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/users"
+                element={
+                  <ProtectedRoute>
+                    <Users />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+
+          {/* Footer */}
+          <footer className="bg-gray-100 text-gray-700 text-center py-4">
+            <p>© 2025 Andrea Tontini. All rights reserved.</p>
+          </footer>
+        </div>
       </Router>
     </AuthProvider>
   );

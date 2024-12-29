@@ -8,7 +8,8 @@ const Products = () => {
 
   const editProduct = async (productId, updates) => {
     try {
-      const response = await axios.put(`http://localhost:5000/products/${productId}`, updates);
+      await axios.put(`http://localhost:5000/products/${productId}`, updates);
+      alert("Product updated successfully.");
     } catch (error) {
       console.error("Failed to edit product: ", error);
     }
@@ -16,11 +17,14 @@ const Products = () => {
 
   const deleteProduct = async (productId) => {
     try {
-      const response = await axios.delete(`$http://localhost:5000/products/${productId}`);
+      await axios.delete(`http://localhost:5000/products/${productId}`);
+      setProducts(products.filter((product) => product.id !== productId));
+      alert("Product deleted successfully.");
     } catch (error) {
       console.error("Failed to delete product: ", error);
     }
   };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -29,33 +33,60 @@ const Products = () => {
             Authorization: `Bearer ${user.access_token}`,
           },
         });
-
-        console.log("Fetched data:", response.data.data);
-        setProducts(response.data.data); // Update state with fetched data
+        setProducts(response.data.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
-
-    // Invoke the fetchProducts function
     fetchProducts();
-  }, []); // Empty dependency array ensures this runs only once
+  }, [user.access_token]);
 
   return (
-    <div>
-      <h2>Products</h2>
-      <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            {product.name}
-            {/*<button onClick={() => editProduct(product.id, { name: "Updated Name" })}>Edit</button>*/}
-
-            {/*delete button not working*/}
-            <button onClick={() => deleteProduct(product.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="container mx-auto">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Products</h2>
+        {products.length > 0 ? (
+          <table className="w-full bg-white shadow-lg rounded-lg overflow-hidden">
+            <thead className="bg-blue-600 text-white">
+              <tr>
+                <th className="text-left px-6 py-4">ID</th>
+                <th className="text-left px-6 py-4">Name</th>
+                <th className="text-left px-6 py-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr
+                  key={product.id}
+                  className="border-b hover:bg-gray-50 transition duration-300"
+                >
+                  <td className="px-6 py-4">{product.id}</td>
+                  <td className="px-6 py-4">{product.name}</td>
+                  <td className="px-6 py-4 flex space-x-4">
+                    <button
+                      onClick={() =>
+                        editProduct(product.id, { name: "Updated Name" })
+                      }
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteProduct(product.id)}
+                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-gray-600 text-center">No products available.</p>
+        )}
+      </div>
     </div>
   );
 };
