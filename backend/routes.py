@@ -68,6 +68,42 @@ def logout():
     else:
         blacklist.add(jti)
         return jsonify({'msg': 'Successfully logged out'}), 200
+    
+@routes.route("/products/", methods=["GET"])
+@jwt_required()
+def get_all_products():
+    try:
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 10, type=int)
+        filters = {
+            "category": request.args.get("category"),
+            "price": request.args.get("price"),
+        }
+        order_by = request.args.get("order_by", "id")
+        order_dir = request.args.get("order_dir", "asc")
+
+        query = Product.query
+        query = apply_filters(query, Product, filters)
+        query = apply_ordering(query, Product, order_by, order_dir)
+        paginated_products = apply_pagination(query, page, per_page)
+
+        products_list = [product.to_dict() for product in paginated_products.items]
+        return jsonify({
+            "msg": "Successfully retrieved products",
+            "data": products_list,
+            "pagination": {
+                "page": paginated_products.page,
+                "per_page": paginated_products.per_page,
+                "total_items": paginated_products.total,
+                "total_pages": paginated_products.pages
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            "msg": "Failed to retrieve products",
+            "error": str(e),
+            "data": None
+        }), 500
 
 @routes.route("/products/<int:product_id>", methods=["PUT"])
 @jwt_required()
