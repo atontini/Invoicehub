@@ -1,58 +1,57 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
-
-  const fetchProducts = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await axios.get('http://localhost:5000/products', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setProducts(response.data.data);
-    } catch (err) {
-      setError(err.response?.data?.msg || "Failed to fetch products");
-    }
-  };
-  
+  const { user } = useAuth();
 
   const editProduct = async (productId, updates) => {
     try {
       const response = await axios.put(`http://localhost:5000/products/${productId}`, updates);
-      alert(response.data.msg);
-      fetchProducts(); // Refresh the product list
-    } catch (err) {
-      setError(err.response?.data?.msg || "Failed to edit product");
+    } catch (error) {
+      console.error("Failed to edit product: ", error);
     }
   };
 
   const deleteProduct = async (productId) => {
     try {
       const response = await axios.delete(`$http://localhost:5000/products/${productId}`);
-      alert(response.data.msg);
-      fetchProducts(); // Refresh the product list
-    } catch (err) {
-      setError(err.response?.data?.msg || "Failed to delete product");
+    } catch (error) {
+      console.error("Failed to delete product: ", error);
     }
   };
-
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/products/`, {
+          headers: {
+            Authorization: `Bearer ${user.access_token}`,
+          },
+        });
+
+        console.log("Fetched data:", response.data.data);
+        setProducts(response.data.data); // Update state with fetched data
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+
+    // Invoke the fetchProducts function
     fetchProducts();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once
 
   return (
     <div>
       <h2>Products</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
         {products.map((product) => (
           <li key={product.id}>
             {product.name}
-            <button onClick={() => editProduct(product.id, { name: "Updated Name" })}>Edit</button>
+            {/*<button onClick={() => editProduct(product.id, { name: "Updated Name" })}>Edit</button>*/}
+
+            {/*delete button not working*/}
             <button onClick={() => deleteProduct(product.id)}>Delete</button>
           </li>
         ))}
