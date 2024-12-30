@@ -285,11 +285,11 @@ def get_all_users():
             "data": None
         }), 500
 
-@routes.route("/analytics", methods=['GET'])
+@routes.route("/analytics/", methods=['GET'])
 @jwt_required()
 def get_all_analytics():
     return jsonify({
-        "msg": "successfully retrieved all categories",
+        "msg": "successfully retrieved all analytics",
         "average_sales": get_average_sales(),
         "total_sales": get_total_sales(),
         "total_inquieries": get_total_inquieries(),
