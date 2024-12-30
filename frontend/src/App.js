@@ -16,7 +16,6 @@ const App = () => {
     <AuthProvider>
       <Router>
         <div className="min-h-screen flex flex-col">
-          {/* Navigation Bar */}
           <nav className="bg-blue-600 text-white shadow-lg">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-xl font-bold">Mokka Back-end Test</div>
@@ -46,7 +45,6 @@ const App = () => {
             </div>
           </nav>
 
-          {/* Content Area */}
           <main className="flex-grow container mx-auto p-4">
             <Routes>
               <Route path="/login" element={<Login />} />
@@ -87,7 +85,6 @@ const App = () => {
             </Routes>
           </main>
 
-          {/* Footer */}
           <footer className="bg-gray-100 text-gray-700 text-center py-4">
             <p>© 2025 Andrea Tontini. All rights reserved.</p>
           </footer>
