@@ -4,7 +4,7 @@ from flask_login import LoginManager
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -79,10 +79,13 @@ def populate_database():
 
     # Create Purchased Items
     if not PurchasedItem.query.first():
-        purchase1 = PurchasedItem(client_id=1, product_id=1, quantity=1, total_price=999.99)
-        purchase2 = PurchasedItem(client_id=2, product_id=2, quantity=2, total_price=39.98)
+        purchase1 = PurchasedItem(client_id=1, product_id=1, quantity=1, total_price=199.99, purchased_at=datetime.now() - timedelta(days=30))
+        purchase2 = PurchasedItem(client_id=2, product_id=2, quantity=2, total_price=39.98, purchased_at=datetime.now() - timedelta(days=60))
+        purchase3 = PurchasedItem(client_id=3, product_id=3, quantity=3, total_price=89.97, purchased_at=datetime.now() - timedelta(days=90))
+        purchase4 = PurchasedItem(client_id=4, product_id=4, quantity=4, total_price=999.96, purchased_at=datetime.now())
 
-        db.session.add_all([purchase1, purchase2])
+
+        db.session.add_all([purchase1, purchase2, purchase3, purchase4])
 
     try:
         db.session.commit()
