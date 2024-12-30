@@ -324,15 +324,14 @@ def get_all_analytics():
 
         # Prepare the KPI results
         kpi_results = {
-            'total_revenue': total_revenue,
-            'total_quantity_sold': total_quantity,
-            'average_order_value': average_order_value,
+            'total_revenue': str(total_revenue),
+            'total_quantity_sold': str(total_quantity),
+            'average_order_value': str(average_order_value),
             'total_purchases': len(df),
             'purchases_per_client': purchases_per_client.to_dict(),
-            'most_purchased_product_id': most_purchased_product
+            'most_purchased_product_id': str(most_purchased_product)
         }
 
         return jsonify(kpi_results)
-
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
