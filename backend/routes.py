@@ -297,41 +297,21 @@ def get_all_users():
 @jwt_required()
 def get_all_analytics():
     try:
-        # Query all purchases from the database
         purchases = PurchasedItem.query.all()
-
-        # Convert the purchases to a pandas DataFrame
-        data = [{
-            'id': p.id,
-            'client_id': p.client_id,
-            'product_id': p.product_id,
-            'quantity': p.quantity,
-            'total_price': p.total_price,
-            'purchased_at': p.purchased_at
-        } for p in purchases]
-
+        data = [
+            {'id': p.id, 'purchased_at': p.purchased_at, 'quantity': p.quantity}
+            for p in purchases
+        ]
+    
+        # Convert to pandas DataFrame
         df = pd.DataFrame(data)
-
-        if df.empty:
-            return jsonify({"message": "No purchases found to analyze."}), 404
-
-        # Calculate KPIs
-        total_revenue = df['total_price'].sum()
-        total_quantity = df['quantity'].sum()
-        average_order_value = total_revenue / len(df)
-        purchases_per_client = df['client_id'].value_counts()
-        most_purchased_product = df['product_id'].value_counts().idxmax()
-
-        # Prepare the KPI results
-        kpi_results = {
-            'total_revenue': str(total_revenue),
-            'total_quantity_sold': str(total_quantity),
-            'average_order_value': str(average_order_value),
-            'total_purchases': len(df),
-            'purchases_per_client': purchases_per_client.to_dict(),
-            'most_purchased_product_id': str(most_purchased_product)
-        }
-
-        return jsonify(kpi_results)
+        df['day'] = df['purchased_at'].dt.date
+        df['hour'] = df['purchased_at'].dt.hour
+    
+        # Group by day and hour
+        grouped = df.groupby(['day', 'hour']).sum(numeric_only=True).reset_index()
+        result = grouped.to_dict(orient='records')
+    
+        return jsonify(result)
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
