@@ -30,7 +30,12 @@ const Products = () => {
 
   const deleteProduct = async (productId) => {
     try {
-      await axios.delete(`http://localhost:5000/products/${productId}`);
+      await axios.delete(
+        `http://localhost:5000/products/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${user.access_token}`,
+          },
+      });
       setProducts(products.filter((product) => product.id !== productId));
       alert("Product deleted successfully.");
     } catch (error) {

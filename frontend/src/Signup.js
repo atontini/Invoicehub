@@ -28,7 +28,7 @@ const Signup = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setMessage(`Signup successful! Access token: ${data.access_token}`);
+        setMessage(`Signup successful!`);
       } else {
         const errorData = await response.json();
         setMessage(`Error: ${errorData.error}`);
