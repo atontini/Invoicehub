@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import ProtectedLink from './ProtectedLink';
 import { AuthProvider } from './AuthContext';
+import Root from './Root';
 import Login from './Login';
 import Logout from './Logout';
 import Signup from './Signup';
@@ -47,6 +48,7 @@ const App = () => {
 
           <main className="flex-grow container mx-auto p-4">
             <Routes>
+              <Route path="/" element={<Root />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/logout" element={<Logout />} />
