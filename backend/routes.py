@@ -302,15 +302,34 @@ def get_all_analytics():
             {'id': p.id, 'purchased_at': p.purchased_at, 'quantity': p.quantity}
             for p in purchases
         ]
+
+        products = Product.query.all()
     
         # Convert to pandas DataFrame
         df = pd.DataFrame(data)
         df['day'] = df['purchased_at'].dt.date
         df['hour'] = df['purchased_at'].dt.hour
-    
+
+        # Convert purchased items to pandas Dataframe
+        purchased_df = pd.DataFrame([{
+            "product_id": item.product_id,
+            "quantity": item.quantity
+        } for item in purchases])
+
+        product_df = pd.DataFrame([product.to_dict() for product in products])
+
+        # Perform a merge to join the data on product_id
+        merged_df = purchased_df.merge(product_df, left_on="product_id", right_on="id")
+
+        # Group by product name and calculate total quantities
+        result_df = merged_df.groupby("name").agg(total_quantity=("quantity", "sum")).reset_index()
+
         # Group by day and hour
-        grouped = df.groupby(['day', 'hour']).sum(numeric_only=True).reset_index()
-        result = grouped.to_dict(orient='records')
+        purchases_per_day = df.groupby(['day', 'hour']).sum(numeric_only=True).reset_index()
+        result = {
+            "purchases_per_day": purchases_per_day.to_dict(orient='records'),
+            "purchases_per_product": result_df.to_dict(orient="records"),
+        }
     
         return jsonify(result)
     except Exception as e:

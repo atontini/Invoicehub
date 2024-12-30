@@ -18,12 +18,10 @@ const Dashboard = () => {
             Authorization: `Bearer ${user.access_token}`,
           },
         });
-        const data = response.data;
-
         const labels = [];
         const purchases = [];
 
-        data.forEach(item => {
+        response.data.purchases_per_day.forEach(item => {
           const dayHour = `${item.day} ${item.hour}:00`;
           labels.push(dayHour);
           purchases.push(item.quantity);
