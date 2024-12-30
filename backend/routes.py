@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User, Product, Category, Client
+from .models import User, Product, Category, Client, PurchasedItem
 from . import db
 from .query_utils import apply_filters, apply_ordering, apply_pagination
-from .analitics_utils import *
+import pandas as pd
 
 routes = Blueprint('routes', __name__)
 
@@ -296,11 +296,43 @@ def get_all_users():
 @routes.route("/analytics/", methods=['GET'])
 @jwt_required()
 def get_all_analytics():
-    return jsonify({
-        "msg": "successfully retrieved all analytics",
-        "average_sales": get_average_sales(),
-        "total_sales": get_total_sales(),
-        "total_inquieries": get_total_inquieries(),
-        "total_invoices": get_total_invoices(),
-        "graph_sales": get_graph_sales(),
-    })
+    try:
+        # Query all purchases from the database
+        purchases = PurchasedItem.query.all()
+
+        # Convert the purchases to a pandas DataFrame
+        data = [{
+            'id': p.id,
+            'client_id': p.client_id,
+            'product_id': p.product_id,
+            'quantity': p.quantity,
+            'total_price': p.total_price,
+            'purchased_at': p.purchased_at
+        } for p in purchases]
+
+        df = pd.DataFrame(data)
+
+        if df.empty:
+            return jsonify({"message": "No purchases found to analyze."}), 404
+
+        # Calculate KPIs
+        total_revenue = df['total_price'].sum()
+        total_quantity = df['quantity'].sum()
+        average_order_value = total_revenue / len(df)
+        purchases_per_client = df['client_id'].value_counts()
+        most_purchased_product = df['product_id'].value_counts().idxmax()
+
+        # Prepare the KPI results
+        kpi_results = {
+            'total_revenue': total_revenue,
+            'total_quantity_sold': total_quantity,
+            'average_order_value': average_order_value,
+            'total_purchases': len(df),
+            'purchases_per_client': purchases_per_client.to_dict(),
+            'most_purchased_product_id': most_purchased_product
+        }
+
+        return jsonify(kpi_results)
+
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
