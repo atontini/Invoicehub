@@ -147,6 +147,14 @@ def delete_product(product_id):
                 "data": None
             }), 404
 
+        associated_purchases = PurchasedItem.query.filter_by(product_id=product_id).first()
+
+        if associated_purchases:
+            return jsonify({
+                "msg": "Product cannot be deleted as it is associated with purchased items",
+                "data": None
+            }), 400
+
         db.session.delete(product)
         db.session.commit()
         return jsonify({
