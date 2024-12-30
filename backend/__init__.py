@@ -67,8 +67,15 @@ def populate_database():
         product1 = Product(name='Laptop', price=999.99, category_id=1)
         product2 = Product(name='Fiction Book', price=19.99, category_id=2)
         product3 = Product(name='T-shirt', price=9.99, category_id=3)
+        product4 = Product(name='Smartphone', price=799.99, category_id=1)
+        product5 = Product(name='Science Fiction Book', price=24.99, category_id=2)
+        product6 = Product(name='Jeans', price=49.99, category_id=3)
+        product7 = Product(name='Headphones', price=199.99, category_id=1)
+        product8 = Product(name='Cookbook', price=29.99, category_id=2)
+        product9 = Product(name='Sweater', price=39.99, category_id=3)
 
-        db.session.add_all([product1, product2, product3])
+
+        db.session.add_all([product1, product2, product3, product4, product5, product6, product7, product8, product9])
 
     # Create Purchased Items
     if not PurchasedItem.query.first():
