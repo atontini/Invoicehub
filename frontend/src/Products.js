@@ -5,6 +5,8 @@ import { useAuth } from "./AuthContext";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const { user } = useAuth();
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [editedName, setEditedName] = useState("");
 
   const fetchProducts = async () => {
     try {
@@ -21,8 +23,12 @@ const Products = () => {
 
   const editProduct = async (productId, updates) => {
     try {
-      await axios.put(`http://localhost:5000/products/${productId}`, updates);
-      alert("Product updated successfully.");
+      await axios.put(`http://localhost:5000/products/${productId}`, updates, {
+        headers: {
+          Authorization: `Bearer ${user.access_token}`,
+        },
+      });
+      fetchProducts();
     } catch (error) {
       console.error("Failed to edit product: ", error);
     }
@@ -47,6 +53,20 @@ const Products = () => {
     fetchProducts();
   }, [user.access_token]);
 
+  const handleEditClick = (product) => {
+    setEditingProductId(product.id);
+    setEditedName(product.name);
+  };
+
+  const handleSaveClick = () => {
+    editProduct(editingProductId, { name: editedName });
+    setEditingProductId(null); // Exit editing mode
+  };
+
+  const handleCancelClick = () => {
+    setEditingProductId(null); // Exit editing mode without saving
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="container mx-auto">
@@ -67,22 +87,50 @@ const Products = () => {
                   className="border-b hover:bg-gray-50 transition duration-300"
                 >
                   <td className="px-6 py-4">{product.id}</td>
-                  <td className="px-6 py-4">{product.name}</td>
+                  <td className="px-6 py-4">
+                    {editingProductId === product.id ? (
+                      <input
+                        type="text"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 rounded"
+                      />
+                    ) : (
+                      product.name
+                    )}
+                  </td>
                   <td className="px-6 py-4 flex space-x-4">
-                    <button
-                      onClick={() =>
-                        editProduct(product.id, { name: "Updated Name" })
-                      }
-                      className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => deleteProduct(product.id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"
-                    >
-                      Delete
-                    </button>
+                    {editingProductId === product.id ? (
+                      <>
+                        <button
+                          onClick={handleSaveClick}
+                          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancelClick}
+                          className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleEditClick(product)}
+                          className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteProduct(product.id)}
+                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
