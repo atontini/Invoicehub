@@ -78,6 +78,7 @@ const Products = () => {
               <tr>
                 <th className="text-left px-6 py-4">ID</th>
                 <th className="text-left px-6 py-4">Name</th>
+                <th className="text-left px-6 py-4">Price</th>
                 <th className="text-left px-6 py-4">Actions</th>
               </tr>
             </thead>
@@ -100,6 +101,7 @@ const Products = () => {
                       product.name
                     )}
                   </td>
+                  <td className="px-6 py-4">{product.price}</td>
                   <td className="px-6 py-4 flex space-x-4">
                     {editingProductId === product.id ? (
                       <>
