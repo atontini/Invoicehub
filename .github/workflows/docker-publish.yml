@@ -1,0 +1,46 @@
+name: Publish Frontend and Backend Docker Images
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the `main` branch
+  workflow_dispatch:  # Allow manual triggers
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the code
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    # Step 2: Log in to GitHub Container Registry
+    - name: Log in to GHCR
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # Step 3: Build and push frontend Docker image
+    - name: Build and push Frontend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend  # Context is the frontend directory
+        file: ./frontend/Dockerfile  # Path to the frontend Dockerfile
+        push: true  # Push the image to GHCR
+        tags: |
+          ghcr.io/atontini/frontend:latest
+          ghcr.io/atontini/frontend:${{ github.sha }}
+
+    # Step 4: Build and push backend Docker image
+    - name: Build and push Backend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend  # Context is the backend directory
+        file: ./backend/Dockerfile  # Path to the backend Dockerfile
+        push: true  # Push the image to GHCR
+        tags: |
+          ghcr.io/atontini/backend:latest
+          ghcr.io/atontini/backend:${{ github.sha }}
