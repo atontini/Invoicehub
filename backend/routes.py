@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User, Product, Category, Client, PurchasedItem
+from backend.models import User, Product, Category, Client, PurchasedItem
 from . import db
 from .query_utils import apply_filters, apply_ordering, apply_pagination
 import pandas as pd
