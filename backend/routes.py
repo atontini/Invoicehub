@@ -366,22 +366,6 @@ def get_all_analytics():
             "isPositive": True,
             "icon": "chart-icon",
         },
-        {
-            "title": "INQUIRIES",
-            "value": "750,897",
-            "subtitle": "since last month",
-            "change": "3.48%",
-            "isPositive": False,
-            "icon": "globe-icon",
-        },
-        {
-            "title": "INVOICES",
-            "value": "897",
-            "subtitle": "since last month",
-            "change": "3.48%",
-            "isPositive": False,
-            "icon": "document-icon",
-        },
         ]
 
         # Group by day and hour
