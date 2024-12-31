@@ -5,6 +5,7 @@ from .models import User, Product, Category, Client, PurchasedItem
 from . import db
 from .query_utils import apply_filters, apply_ordering, apply_pagination
 import pandas as pd
+from datetime import datetime, timedelta
 
 routes = Blueprint('routes', __name__)
 
@@ -299,7 +300,7 @@ def get_all_analytics():
     try:
         purchases = PurchasedItem.query.all()
         data = [
-            {'id': p.id, 'purchased_at': p.purchased_at, 'quantity': p.quantity}
+            {'id': p.id, 'purchased_at': p.purchased_at, 'quantity': p.quantity, "total_price": p.total_price}
             for p in purchases
         ]
 
@@ -324,11 +325,72 @@ def get_all_analytics():
         # Group by product name and calculate total quantities
         result_df = merged_df.groupby("name").agg(total_quantity=("quantity", "sum")).reset_index()
 
+        ### Cards Data ###
+        ## Average Sales ##
+        # Filter data for the current month
+        current_month = df[df['purchased_at'].dt.strftime('%Y-%m') == datetime.now().strftime("%Y-%m")]
+
+        # Calculate average sales
+        average_sales = current_month['total_price'].mean()
+
+        last_month_date = datetime.now().replace(day=1) - timedelta(days=1)
+        last_month = df[df['purchased_at'].dt.strftime('%Y-%m') == last_month_date.strftime("%Y-%m")]
+        last_month_avg = last_month['total_price'].mean()
+
+        average_sales_percentage_increase = ((average_sales - last_month_avg) / last_month_avg) * 100
+
+        ## Total Sales ##
+        total_sales = df['total_price'].sum()
+
+        total_sales_by_year = df.groupby('purchased_at')['total_price'].sum()
+
+        current_year_sales = total_sales_by_year[total_sales_by_year.index[-1]]
+        previous_year_sales = total_sales_by_year[total_sales_by_year.index[-2]]
+
+        total_sales_increase = ((current_year_sales - previous_year_sales) / previous_year_sales) * 100
+
+        cards_data = [
+        {
+            "title": "AVERAGE SALES",
+            "value": average_sales,
+            "subtitle": "this month",
+            "change": str(round(average_sales_percentage_increase,2))+"%",
+            "isPositive": True,
+            "icon": "dollar-icon",
+        },
+        {
+            "title": "TOTAL SALES",
+            "value": total_sales,
+            "subtitle": "since last year",
+            "change": str(round(total_sales_increase,2))+"%",
+            "isPositive": True,
+            "icon": "chart-icon",
+        },
+        {
+            "title": "INQUIRIES",
+            "value": "750,897",
+            "subtitle": "since last month",
+            "change": "3.48%",
+            "isPositive": False,
+            "icon": "globe-icon",
+        },
+        {
+            "title": "INVOICES",
+            "value": "897",
+            "subtitle": "since last month",
+            "change": "3.48%",
+            "isPositive": False,
+            "icon": "document-icon",
+        },
+        ]
+
         # Group by day and hour
         purchases_per_day = df.groupby(['day', 'hour']).sum(numeric_only=True).reset_index()
+
         result = {
             "purchases_per_day": purchases_per_day.to_dict(orient='records'),
             "purchases_per_product": result_df.to_dict(orient="records"),
+            "cards_data": cards_data
         }
     
         return jsonify(result)
