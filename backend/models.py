@@ -1,49 +1,35 @@
 from flask_login import UserMixin
+from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from . import db
 
-class User(UserMixin, db.Model):
+@as_declarative()
+class Base:
+    id = None
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.table.columns}
+
+class User(UserMixin, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
 
-class Client(db.Model):
+class Client(Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.now())
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "email": self.email,
-            "created_at": self.created_at,
-        }
-
-class Product(db.Model):
+class Product(Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "price": self.price,
-            "category_id": self.category_id,
-        }
 
-class Category(db.Model):
+class Category(Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-        }
 
 class PurchasedItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
